@@ -1,0 +1,602 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Event Registration Form</title>
+<style>
+:root {
+  --bg-color: #121212;
+  --card-bg: #1e1e1e;
+  --text-color: #e0e0e0;
+  --accent-color: #bb86fc;
+  --error-color: #cf6679;
+  --success-color: #03dac6;
+  --button-hover: #b075f3;
+  --input-bg: #2d2d2d;
+  --card-shadow: 0 8px 16px rgba(0, 0, 0, 0.4);
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+body {
+  background-color: var(--bg-color);
+  color: var(--text-color);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 2rem 1rem;
+}
+
+.container {
+  width: 100%;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+header {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+h1 {
+  font-size: 2.5rem;
+  margin-bottom: 0.5rem;
+  background: linear-gradient(90deg, var(--accent-color), var(--success-color));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+p.subtitle {
+  font-size: 1.1rem;
+  opacity: 0.8;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.form-card {
+  background-color: var(--card-bg);
+  border-radius: 12px;
+  padding: 2rem;
+  box-shadow: var(--card-shadow);
+  margin-bottom: 2rem;
+  animation: fadeIn 0.5s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.form-group {
+  margin-bottom: 1.5rem;
+}
+
+label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: 500;
+}
+
+input, select, textarea {
+  width: 100%;
+  padding: 0.8rem 1rem;
+  background-color: var(--input-bg);
+  border: 1px solid #333;
+  border-radius: 6px;
+  color: var(--text-color);
+  font-size: 1rem;
+  transition: all 0.3s ease;
+}
+
+input:focus, select:focus, textarea:focus {
+  outline: none;
+  border-color: var(--accent-color);
+  box-shadow: 0 0 0 2px rgba(187, 134, 252, 0.2);
+}
+
+button {
+  background-color: var(--accent-color);
+  color: #000;
+  border: none;
+  border-radius: 6px;
+  padding: 0.8rem 1.5rem;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  margin-top: 1rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+button:hover {
+  background-color: var(--button-hover);
+  transform: translateY(-2px);
+}
+
+button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+button svg {
+  margin-right: 0.5rem;
+}
+
+.image-preview {
+  margin-top: 1rem;
+  text-align: center;
+  display: none;
+}
+
+.image-preview img {
+  max-width: 100%;
+  max-height: 300px;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.status-message {
+  padding: 1rem;
+  border-radius: 6px;
+  margin-bottom: 1.5rem;
+  display: none;
+}
+
+.error {
+  background-color: rgba(207, 102, 121, 0.1);
+  border-left: 4px solid var(--error-color);
+  color: var(--error-color);
+}
+
+.success {
+  background-color: rgba(3, 218, 198, 0.1);
+  border-left: 4px solid var(--success-color);
+  color: var(--success-color);
+}
+
+.form-buttons {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+#data-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 2rem;
+}
+
+#data-table th, #data-table td {
+  padding: 0.8rem;
+  text-align: left;
+  border-bottom: 1px solid #333;
+}
+
+#data-table th {
+  background-color: rgba(187, 134, 252, 0.1);
+  color: var(--accent-color);
+}
+
+#data-table td img {
+  max-width: 80px;
+  max-height: 80px;
+  border-radius: 4px;
+}
+
+.submitted-entries-title {
+  margin-top: 3rem;
+  margin-bottom: 1rem;
+  text-align: center;
+}
+
+.submitted-entries-card {
+  background-color: var(--card-bg);
+  border-radius: 12px;
+  padding: 2rem;
+  box-shadow: var(--card-shadow);
+  margin-bottom: 2rem;
+  animation: fadeIn 0.5s ease-in-out;
+}
+
+.file-input-wrapper {
+  position: relative;
+  overflow: hidden;
+  display: inline-block;
+  width: 100%;
+}
+
+.file-input-wrapper input[type=file] {
+  font-size: 100px;
+  position: absolute;
+  left: 0;
+  top: 0;
+  opacity: 0;
+  cursor: pointer;
+}
+
+.file-input-button {
+  background-color: var(--input-bg);
+  border: 1px dashed #444;
+  border-radius: 6px;
+  padding: 2rem 1rem;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.file-input-button:hover {
+  border-color: var(--accent-color);
+  background-color: rgba(187, 134, 252, 0.05);
+}
+
+.file-input-button svg {
+  fill: var(--accent-color);
+  width: 48px;
+  height: 48px;
+  margin-bottom: 1rem;
+}
+
+.file-input-text {
+  display: block;
+  margin-top: 0.5rem;
+  font-size: 0.9rem;
+  opacity: 0.7;
+}
+
+footer {
+  margin-top: 2rem;
+  text-align: center;
+  opacity: 0.8;
+  font-size: 0.9rem;
+}
+
+.loading {
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-radius: 50%;
+  border-top-color: #fff;
+  animation: spin 1s ease-in-out infinite;
+  margin-right: 10px;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.no-entries {
+  text-align: center;
+  padding: 2rem;
+  color: #777;
+}
+
+.hidden {
+  display: none;
+}
+
+@media (max-width: 600px) {
+  .form-card {
+    padding: 1.5rem;
+  }
+
+  h1 {
+    font-size: 2rem;
+  }
+
+  .form-buttons {
+    flex-direction: column;
+  }
+
+  button {
+    width: 100%;
+  }
+}
+
+/* Manager-only visibility */
+.manager-only {
+  display: none;
+}
+
+.manager-view .manager-only {
+  display: block;
+}
+</style>
+</head>
+<body>
+<div class="container">
+<header>
+<h1>Event Registration Form</h1>
+<p class="subtitle">Enter your event details and upload an image. All submissions are collected in-browser.</p>
+</header>
+<div id="status-message" class="status-message"></div>
+<div class="form-card">
+<form id="event-form">
+<div class="form-group">
+<label for="name">Name</label>
+<input type="text" id="name" name="name" required placeholder="Enter your full name">
+</div>
+<div class="form-group">
+<label for="event">Event</label>
+<input type="text" id="event" name="event" required placeholder="Enter event name">
+</div>
+<div class="form-group">
+<label for="position">Position</label>
+<input type="text" id="position" name="position" required placeholder="Enter your position">
+</div>
+<div class="form-group">
+<label for="points">Points</label>
+<input type="number" id="points" name="points" required placeholder="Enter points" min="0">
+</div>
+<div class="form-group">
+<label for="image">Image Upload</label>
+<div class="file-input-wrapper">
+<div class="file-input-button" id="file-input-button">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+<path d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96zM14 13v4h-4v-4H7l5-5 5 5h-3z"/>
+</svg>
+<span>Click to upload image</span>
+<span class="file-input-text">Supported formats: JPG, PNG, GIF (max 5MB)</span>
+</div>
+<input type="file" id="image" name="image" accept="image/*">
+</div>
+<div class="image-preview" id="image-preview">
+<img id="preview-img" src="#" alt="Image preview">
+</div>
+</div>
+<div class="form-buttons">
+<button type="submit" id="submit-btn">Submit Entry</button>
+<button type="button" id="download-btn" class="manager-only">Download as CSV</button>
+<button type="button" id="clear-btn" class="manager-only">Clear All Entries</button>
+</div>
+</form>
+</div>
+<h2 class="submitted-entries-title manager-only">Submitted Entries</h2>
+<div class="submitted-entries-card manager-only">
+<div id="table-container">
+<table id="data-table">
+<thead>
+<tr>
+<th>Name</th>
+<th>Event</th>
+<th>Position</th>
+<th>Points</th>
+<th>Image</th>
+</tr>
+</thead>
+<tbody id="table-body">
+<tr class="no-entries-row">
+<td colspan="5" class="no-entries">No entries submitted yet</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<footer>
+<p>© 2025 Event Registration Form. Designed for GitHub Pages.</p>
+</footer>
+</div>
+<script>
+// Use memory storage instead of localStorage
+let formData = [];
+// DOM elements
+const form = document.getElementById('event-form');
+const statusMessage = document.getElementById('status-message');
+const tableBody = document.getElementById('table-body');
+const downloadBtn = document.getElementById('download-btn');
+const clearBtn = document.getElementById('clear-btn');
+const imageInput = document.getElementById('image');
+const imagePreview = document.getElementById('image-preview');
+const previewImg = document.getElementById('preview-img');
+const fileInputButton = document.getElementById('file-input-button');
+const submitBtn = document.getElementById('submit-btn');
+const noEntriesRow = document.querySelector('.no-entries-row');
+
+// Check if user is a manager (e.g., via URL parameter or prompt)
+const urlParams = new URLSearchParams(window.location.search);
+const isManager = urlParams.get('manager') === 'true'; // Example: ?manager=true
+if (isManager) {
+  document.body.classList.add('manager-view');
+}
+
+// Function to show status message
+function showStatus(message, type) {
+  statusMessage.textContent = message;
+  statusMessage.className = `status-message ${type}`;
+  statusMessage.style.display = 'block';
+  setTimeout(() => {
+    statusMessage.style.display = 'none';
+  }, 5000);
+}
+
+// Function to render table data (only for manager)
+function renderTable() {
+  if (!isManager) return; // Only render for managers
+  const rows = tableBody.querySelectorAll('tr:not(.no-entries-row)');
+  rows.forEach(row => row.remove());
+  if (formData.length === 0) {
+    noEntriesRow.classList.remove('hidden');
+    return;
+  }
+  noEntriesRow.classList.add('hidden');
+  formData.forEach((entry) => {
+    const row = document.createElement('tr');
+    const nameCell = document.createElement('td');
+    nameCell.textContent = entry.name;
+    row.appendChild(nameCell);
+    const eventCell = document.createElement('td');
+    eventCell.textContent = entry.event;
+    row.appendChild(eventCell);
+    const positionCell = document.createElement('td');
+    positionCell.textContent = entry.position;
+    row.appendChild(positionCell);
+    const pointsCell = document.createElement('td');
+    pointsCell.textContent = entry.points;
+    row.appendChild(pointsCell);
+    const imageCell = document.createElement('td');
+    if (entry.image) {
+      const img = document.createElement('img');
+      img.src = entry.image;
+      img.alt = `Image for ${entry.name}`;
+      imageCell.appendChild(img);
+    } else {
+      imageCell.textContent = 'No image';
+    }
+    row.appendChild(imageCell);
+    tableBody.appendChild(row);
+  });
+  console.log('Table rendered with data:', formData);
+}
+
+// Function to handle image preview
+function handleImagePreview(e) {
+  const file = e.target.files[0];
+  if (!file) {
+    imagePreview.style.display = 'none';
+    return;
+  }
+  if (file.size > 5 * 1024 * 1024) {
+    showStatus('Image exceeds maximum size of 5MB', 'error');
+    imageInput.value = '';
+    imagePreview.style.display = 'none';
+    return;
+  }
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    previewImg.src = e.target.result;
+    imagePreview.style.display = 'block';
+  };
+  reader.readAsDataURL(file);
+}
+
+// Function to read image as data URL (returns a promise)
+function readImage(file) {
+  return new Promise((resolve, reject) => {
+    if (!file) {
+      resolve(null);
+      return;
+    }
+    if (file.size > 5 * 1024 * 1024) {
+      reject('Image exceeds maximum size of 5MB');
+      return;
+    }
+    const reader = new FileReader();
+    reader.onload = () => resolve(reader.result);
+    reader.onerror = () => reject('Error reading image file');
+    reader.readAsDataURL(file);
+  });
+}
+
+// Function to convert data to CSV (manager only)
+function convertToCSV() {
+  if (!isManager) return null; // Only for managers
+  if (formData.length === 0) {
+    showStatus('No data to download', 'error');
+    return null;
+  }
+  const headers = ['Name', 'Event', 'Position', 'Points', 'Image'];
+  const rows = formData.map(entry => {
+    return [
+      `"${entry.name.replace(/"/g, '""')}"`,
+      `"${entry.event.replace(/"/g, '""')}"`,
+      `"${entry.position.replace(/"/g, '""')}"`,
+      entry.points,
+      entry.image ? '"[Image Data]"' : '""'
+    ].join(',');
+  });
+  return [headers.join(','), ...rows].join('\n');
+}
+
+// Function to download CSV (manager only)
+function downloadCSV() {
+  if (!isManager) return; // Only for managers
+  const csv = convertToCSV();
+  if (!csv) return;
+  const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement('a');
+  link.setAttribute('href', url);
+  link.setAttribute('download', `event_registrations_${new Date().toISOString().slice(0, 10)}.csv`);
+  link.style.display = 'none';
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+  showStatus('CSV file downloaded successfully', 'success');
+}
+
+// Function to clear all data (manager only)
+function clearData() {
+  if (!isManager) return; // Only for managers
+  if (confirm('Are you sure you want to clear all entries? This action cannot be undone.')) {
+    formData = [];
+    renderTable();
+    showStatus('All entries have been cleared', 'success');
+  }
+}
+
+// Event listener for form submission
+form.addEventListener('submit', async function(e) {
+  e.preventDefault();
+  submitBtn.disabled = true;
+  submitBtn.innerHTML = '<span class="loading"></span> Submitting...';
+  // Get form values
+  const name = document.getElementById('name').value.trim();
+  const event = document.getElementById('event').value.trim();
+  const position = document.getElementById('position').value.trim();
+  const points = document.getElementById('points').value.trim();
+  const imageFile = document.getElementById('image').files[0];
+  // Validate required fields
+  if (!name || !event || !position || !points) {
+    showStatus('Please fill in all required fields', 'error');
+    submitBtn.disabled = false;
+    submitBtn.innerHTML = 'Submit Entry';
+    return;
+  }
+  try {
+    // Process image if present
+    const imageData = await readImage(imageFile);
+    // Create new entry
+    const newEntry = {
+      name,
+      event,
+      position,
+      points,
+      image: imageData,
+      timestamp: new Date().toISOString()
+    };
+    // Add to data array
+    formData.push(newEntry);
+    console.log('New entry added:', newEntry);
+    // Update table (for managers only)
+    renderTable();
+    // Reset form
+    form.reset();
+    imagePreview.style.display = 'none';
+    showStatus('Entry submitted successfully', 'success');
+  } catch (error) {
+    showStatus(error, 'error');
+  } finally {
+    // Always re-enable button
+    submitBtn.disabled = false;
+    submitBtn.innerHTML = 'Submit Entry';
+  }
+});
+
+// Event listeners
+downloadBtn.addEventListener('click', downloadCSV);
+clearBtn.addEventListener('click', clearData);
+imageInput.addEventListener('change', handleImagePreview);
+fileInputButton.addEventListener('click', () => imageInput.click());
+</script>
+</body>
+</html>
